@@ -49,9 +49,12 @@ export default async function DeleteCategoryPage({ params }: PageProps) {
         </div>
 
         {products.length > 0 && (
-          <div className="mb-6 p-4 bg-yellow-100 dark:bg-yellow-900/30 border border-yellow-300 dark:border-yellow-700 rounded">
-            <p className="text-yellow-800 dark:text-yellow-200">
-              This category has {products.length} product(s). Deleting it may cause issues with those products.
+          <div className="mb-6 p-4 bg-orange-100 dark:bg-orange-900/30 border border-orange-300 dark:border-orange-700 rounded">
+            <p className="text-orange-800 dark:text-orange-200 font-semibold mb-2">
+              ⚠️ This will also delete {products.length} product(s)!
+            </p>
+            <p className="text-orange-800 dark:text-orange-200 text-sm">
+              All products in this category will be permanently deleted. This action cannot be undone.
             </p>
           </div>
         )}

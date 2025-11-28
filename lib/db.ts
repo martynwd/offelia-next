@@ -71,6 +71,11 @@ export const updateCategory = (id: number, name: string, description: string | n
 };
 
 export const deleteCategory = (id: number) => {
+  // First delete all products in this category
+  const deleteProductsStmt = db.prepare('DELETE FROM products WHERE category_id = ?');
+  deleteProductsStmt.run(id);
+
+  // Then delete the category
   const stmt = db.prepare('DELETE FROM categories WHERE id = ?');
   return stmt.run(id);
 };
@@ -79,6 +84,18 @@ export const deleteCategory = (id: number) => {
 export const getAllProducts = () => {
   const stmt = db.prepare('SELECT * FROM products ORDER BY name');
   return stmt.all() as Product[];
+};
+
+export const getProductsPaginated = (page: number = 1, limit: number = 50) => {
+  const offset = (page - 1) * limit;
+  const stmt = db.prepare('SELECT * FROM products ORDER BY name LIMIT ? OFFSET ?');
+  return stmt.all(limit, offset) as Product[];
+};
+
+export const getTotalProductsCount = () => {
+  const stmt = db.prepare('SELECT COUNT(*) as count FROM products');
+  const result = stmt.get() as { count: number };
+  return result.count;
 };
 
 export const getProductsByCategoryId = (categoryId: number) => {

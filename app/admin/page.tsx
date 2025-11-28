@@ -1,13 +1,39 @@
-import { getAllCategories, getAllProducts } from "@/lib/db";
+import { getAllCategories, getProductsPaginated, getTotalProductsCount } from "@/lib/db";
+import { checkAuth } from "@/lib/auth";
+import { redirect } from "next/navigation";
 import Link from "next/link";
 
-export default function AdminPage() {
+interface PageProps {
+  searchParams: Promise<{ page?: string }>;
+}
+
+export default async function AdminPage({ searchParams }: PageProps) {
+  const isAuthenticated = await checkAuth();
+
+  if (!isAuthenticated) {
+    redirect("/admin/login");
+  }
+
+  const params = await searchParams;
+  const currentPage = parseInt(params.page || '1', 10);
+  const itemsPerPage = 50;
+
   const categories = getAllCategories();
-  const products = getAllProducts();
+  const products = getProductsPaginated(currentPage, itemsPerPage);
+  const totalProducts = getTotalProductsCount();
+  const totalPages = Math.ceil(totalProducts / itemsPerPage);
 
   return (
     <div>
-      <h1 className="text-4xl font-bold mb-8">Admin Dashboard</h1>
+      <div className="flex items-center justify-between mb-8">
+        <h1 className="text-4xl font-bold">Admin Dashboard</h1>
+        <Link
+          href="/admin/logout"
+          className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded transition-colors"
+        >
+          Logout
+        </Link>
+      </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         {/* Categories Section */}
@@ -127,6 +153,61 @@ export default function AdminPage() {
                 );
               })
             )}
+          </div>
+
+          {/* Pagination */}
+          <div className="mt-6 flex items-center justify-between border-t pt-4">
+            <div className="text-sm text-gray-600 dark:text-gray-400">
+              Showing {((currentPage - 1) * itemsPerPage) + 1} to {Math.min(currentPage * itemsPerPage, totalProducts)} of {totalProducts} products
+            </div>
+            <div className="flex gap-2">
+              {currentPage > 1 && (
+                <Link
+                  href={`/admin?page=${currentPage - 1}`}
+                  className="px-4 py-2 border border-gray-300 rounded hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                >
+                  Previous
+                </Link>
+              )}
+
+              <div className="flex gap-1">
+                {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+                  let pageNum;
+                  if (totalPages <= 5) {
+                    pageNum = i + 1;
+                  } else if (currentPage <= 3) {
+                    pageNum = i + 1;
+                  } else if (currentPage >= totalPages - 2) {
+                    pageNum = totalPages - 4 + i;
+                  } else {
+                    pageNum = currentPage - 2 + i;
+                  }
+
+                  return (
+                    <Link
+                      key={pageNum}
+                      href={`/admin?page=${pageNum}`}
+                      className={`px-4 py-2 border rounded transition-colors ${
+                        currentPage === pageNum
+                          ? 'bg-primary text-white border-primary'
+                          : 'border-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
+                      }`}
+                    >
+                      {pageNum}
+                    </Link>
+                  );
+                })}
+              </div>
+
+              {currentPage < totalPages && (
+                <Link
+                  href={`/admin?page=${currentPage + 1}`}
+                  className="px-4 py-2 border border-gray-300 rounded hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                >
+                  Next
+                </Link>
+              )}
+            </div>
           </div>
         </section>
       </div>

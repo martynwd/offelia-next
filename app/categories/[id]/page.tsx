@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import { getCategoryById, getAvailableProductsByCategoryId } from "@/lib/db";
 import Image from "next/image";
+import Link from "next/link";
 
 interface PageProps {
   params: Promise<{
@@ -44,9 +45,10 @@ export default async function CategoryPage({ params }: PageProps) {
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
           {products.map((product) => (
-            <div
+            <Link
               key={product.id}
-              className="bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden hover:shadow-xl transition-shadow"
+              href={`/products/${product.id}`}
+              className="bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden hover:shadow-xl transition-shadow cursor-pointer group"
             >
               {product.photo_url ? (
                 <div className="relative h-48 w-full bg-gray-200 dark:bg-gray-700">
@@ -54,7 +56,7 @@ export default async function CategoryPage({ params }: PageProps) {
                     src={product.photo_url}
                     alt={product.name}
                     fill
-                    className="object-cover"
+                    className="object-cover group-hover:scale-105 transition-transform duration-300"
                   />
                 </div>
               ) : (
@@ -75,7 +77,7 @@ export default async function CategoryPage({ params }: PageProps) {
                 </div>
               )}
               <div className="p-4">
-                <h3 className="text-xl font-semibold mb-2">{product.name}</h3>
+                <h3 className="text-xl font-semibold mb-2 group-hover:text-primary transition-colors">{product.name}</h3>
                 {product.description && (
                   <p className="text-gray-600 dark:text-gray-400 mb-3 line-clamp-2">
                     {product.description}
@@ -92,7 +94,7 @@ export default async function CategoryPage({ params }: PageProps) {
                   )}
                 </div>
               </div>
-            </div>
+            </Link>
           ))}
         </div>
       )}

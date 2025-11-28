@@ -149,4 +149,70 @@ export const deleteProduct = (id: number) => {
   return stmt.run(id);
 };
 
+// Slider interface
+export interface Slider {
+  id: number;
+  image_url: string;
+  title: string | null;
+  description: string | null;
+  link_url: string | null;
+  order_index: number;
+  is_active: boolean | null;
+  user_id: number;
+  created_at: string;
+  updated_at: string;
+}
+
+// Slider queries
+export const getAllSliders = () => {
+  const stmt = db.prepare('SELECT * FROM sliders ORDER BY order_index ASC');
+  return stmt.all() as Slider[];
+};
+
+export const getActiveSliders = () => {
+  const stmt = db.prepare('SELECT * FROM sliders WHERE is_active = 1 ORDER BY order_index ASC');
+  return stmt.all() as Slider[];
+};
+
+export const getSliderById = (id: number) => {
+  const stmt = db.prepare('SELECT * FROM sliders WHERE id = ?');
+  return stmt.get(id) as Slider | undefined;
+};
+
+export const createSlider = (
+  imageUrl: string,
+  title: string | null,
+  description: string | null,
+  linkUrl: string | null,
+  orderIndex: number,
+  userId: number,
+  isActive: boolean = true
+) => {
+  const stmt = db.prepare(
+    "INSERT INTO sliders (image_url, title, description, link_url, order_index, is_active, user_id, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, datetime('now'), datetime('now'))"
+  );
+  const result = stmt.run(imageUrl, title, description, linkUrl, orderIndex, isActive ? 1 : 0, userId);
+  return result.lastInsertRowid;
+};
+
+export const updateSlider = (
+  id: number,
+  imageUrl: string,
+  title: string | null,
+  description: string | null,
+  linkUrl: string | null,
+  orderIndex: number,
+  isActive: boolean
+) => {
+  const stmt = db.prepare(
+    "UPDATE sliders SET image_url = ?, title = ?, description = ?, link_url = ?, order_index = ?, is_active = ?, updated_at = datetime('now') WHERE id = ?"
+  );
+  return stmt.run(imageUrl, title, description, linkUrl, orderIndex, isActive ? 1 : 0, id);
+};
+
+export const deleteSlider = (id: number) => {
+  const stmt = db.prepare('DELETE FROM sliders WHERE id = ?');
+  return stmt.run(id);
+};
+
 export default db;

@@ -35,6 +35,31 @@ export default async function AdminPage({ searchParams }: PageProps) {
         </Link>
       </div>
 
+      {/* Quick Actions */}
+      <div className="mb-8">
+        <h2 className="text-xl font-semibold mb-4">Quick Actions</h2>
+        <div className="flex gap-3 flex-wrap">
+          <Link
+            href="/admin/sliders"
+            className="bg-purple-600 hover:bg-purple-700 text-white px-6 py-3 rounded-lg transition-colors font-medium"
+          >
+            🖼️ Manage Sliders
+          </Link>
+          <Link
+            href="/admin/categories/new"
+            className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg transition-colors font-medium"
+          >
+            ➕ Add Category
+          </Link>
+          <Link
+            href="/admin/products/new"
+            className="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg transition-colors font-medium"
+          >
+            ➕ Add Product
+          </Link>
+        </div>
+      </div>
+
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         {/* Categories Section */}
         <section className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">

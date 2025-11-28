@@ -1,31 +1,43 @@
 import Link from "next/link";
-import { getAllCategories } from "@/lib/db";
+import { getAllCategories, getActiveSliders } from "@/lib/db";
+import { HomepageSlider } from "@/components/homepage-slider";
 
 export default function Home() {
   const categories = getAllCategories();
+  const slides = getActiveSliders();
+
+  // Get current date and time in Russian format
+  const currentDate = new Date().toLocaleString('ru-RU', {
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit'
+  });
 
   return (
     <div>
-      <h1 className="text-4xl font-bold mb-8">Welcome to Offelia Store</h1>
+      {/* Hero Slider */}
+      <section className="mb-12 flex justify-center items-center">
+        <HomepageSlider slides={slides} />
+      </section>
 
+      {/* Categories Section */}
       <section className="mb-12">
-        <h2 className="text-2xl font-semibold mb-6">Browse by Category</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {categories.map((category) => (
-            <Link
-              key={category.id}
-              href={`/categories/${category.id}`}
-              className="block p-6 bg-white dark:bg-gray-800 rounded-lg shadow-md hover:shadow-lg transition-shadow border border-gray-200 dark:border-gray-700"
-            >
-              <h3 className="text-xl font-semibold mb-2">{category.name}</h3>
-              {category.description && (
-                <p className="text-gray-600 dark:text-gray-400">
-                  {category.description}
-                </p>
-              )}
-            </Link>
-          ))}
-        </div>
+          <div className="p-8 border border-accent rounded-[36px] text-[32px]">
+              <p>
+                  Режим работы магазинов с 9:00 до 19:00 без перерывов и выходных <br />
+                  Оформление онлайн заказов по телефонам: 23-30-18 и +7-927-640-20-00. <br />
+                  Оплатить можно на карту Альфабанка:{' '}
+                  <strong>2200 1505 3017 9776</strong>  <br />или на карту Сбербанка:{' '}
+                  <strong>2202 2032 1479 6528</strong>, <br /> обязательно при этом указав номер заказа
+              </p>
+          </div>
+          <div className="p-8 border border-accent rounded-[36px] text-[32px] mt-8">
+              <p>
+                  Цены актуальны на: {currentDate}
+              </p>
+          </div>
       </section>
     </div>
   );

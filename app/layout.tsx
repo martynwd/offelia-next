@@ -21,7 +21,7 @@ export const metadata: Metadata = {
 
 const navigationItems = [
   { name: "Каталог", href: "/", hasDropdown: true },
-  { name: "Магазины", href: "/stores" },
+  { name: "Магазины", href: "/shops" },
   { name: "Сервис", href: "/service" },
   { name: "Кредит", href: "/credit" },
   { name: "Доставка", href: "/delivery" },

@@ -18,7 +18,7 @@ export default function Home() {
   return (
     <div>
       {/* Hero Slider */}
-      <section className="mb-12 flex justify-center items-center">
+      <section className="mb-12 flex justify-center items-center max-sm:hidden">
         <HomepageSlider slides={slides} />
       </section>
 

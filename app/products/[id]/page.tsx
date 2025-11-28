@@ -141,17 +141,14 @@ export default async function ProductPage({ params }: PageProps) {
           )}
 
           {/* Actions */}
-          <div className="flex flex-col sm:flex-row gap-3 mt-auto">
+          <div className="flex flex-col sm:flex-row gap-3 mt-auto h-12">
             <Button
               size="lg"
-              className="flex-1 bg-primary hover:bg-primary/90 h-14 sm:h-12"
+              className="flex-1 bg-primary hover:bg-primary/90 h-14 max-sm:h-12"
               disabled={!product.avialability}
             >
               <ShoppingCart className="mr-2 h-5 w-5" />
-              Купить
-            </Button>
-            <Button size="lg" variant="outline" className="flex-1 h-14 sm:h-12">
-              Позвонить
+                Позвонить
             </Button>
           </div>
 

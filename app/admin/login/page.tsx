@@ -13,19 +13,17 @@ export default function AdminLoginPage() {
       const cookieStore = await cookies();
 
       // Cookie configuration that works in production
+      // Only set secure flag if explicitly enabled via env var (for HTTPS)
+      // Default to false for HTTP deployments
+      const useSecureCookies = process.env.USE_SECURE_COOKIES === "true";
+
       const cookieOptions: any = {
         httpOnly: true,
         sameSite: "lax", // Changed from "strict" to "lax" to allow cookies during navigation
         path: "/", // Ensure cookie is available for all paths
         maxAge: 60 * 60 * 24, // 24 hours
+        secure: useSecureCookies, // Only true if explicitly set in env
       };
-
-      // Only set secure flag if using HTTPS
-      // This can be controlled via USE_SECURE_COOKIES env var
-      const useSecureCookies = process.env.USE_SECURE_COOKIES !== "false";
-      if (process.env.NODE_ENV === "production" && useSecureCookies) {
-        cookieOptions.secure = true;
-      }
 
       cookieStore.set("admin_session", "authenticated", cookieOptions);
       redirect("/admin");

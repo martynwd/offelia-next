@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation";
 import { cookies } from "next/headers";
-import { validateCredentials } from "@/lib/auth";
+import { validateCredentials, generateSessionToken } from "@/lib/auth";
 
 export default function AdminLoginPage() {
   async function handleLogin(formData: FormData) {
@@ -10,22 +10,22 @@ export default function AdminLoginPage() {
     const password = formData.get("password") as string;
 
     if (validateCredentials(username, password)) {
+      // Create a secure session token with embedded expiration
+      const sessionToken = generateSessionToken(username);
+
       const cookieStore = await cookies();
 
-      // Cookie configuration that works in production
-      // Only set secure flag if explicitly enabled via env var (for HTTPS)
-      // Default to false for HTTP deployments
+      // Cookie configuration
       const useSecureCookies = process.env.USE_SECURE_COOKIES === "true";
 
-      const cookieOptions: any = {
+      cookieStore.set("admin_session", sessionToken, {
         httpOnly: true,
-        sameSite: "lax", // Changed from "strict" to "lax" to allow cookies during navigation
-        path: "/", // Ensure cookie is available for all paths
+        sameSite: "lax",
+        path: "/",
         maxAge: 60 * 60 * 24, // 24 hours
-        secure: useSecureCookies, // Only true if explicitly set in env
-      };
+        secure: useSecureCookies,
+      });
 
-      cookieStore.set("admin_session", "authenticated", cookieOptions);
       redirect("/admin");
     } else {
       redirect("/admin/login?error=1");

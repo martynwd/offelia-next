@@ -16,6 +16,7 @@ services:
       - DATABASE_PATH=/app/data/development.sqlite3
       - ADMIN_USERNAME=${ADMIN_USERNAME:-admin}
       - ADMIN_PASSWORD=${ADMIN_PASSWORD:-admin}
+      - SESSION_SECRET=${SESSION_SECRET:-change-this-to-a-random-secret-key-in-production}
       # Set to "true" only if using HTTPS, otherwise leave as "false"
       - USE_SECURE_COOKIES=${USE_SECURE_COOKIES:-false}
     restart: unless-stopped

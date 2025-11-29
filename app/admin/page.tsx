@@ -1,19 +1,13 @@
 import { getAllCategories, getProductsPaginated, getTotalProductsCount } from "@/lib/db";
-import { checkAuth } from "@/lib/auth";
-import { redirect } from "next/navigation";
 import Link from "next/link";
+import { AdminAuthGuard } from "@/components/admin-auth-guard";
+import { AdminLogoutButton } from "@/components/admin-logout-button";
 
 interface PageProps {
   searchParams: Promise<{ page?: string }>;
 }
 
 export default async function AdminPage({ searchParams }: PageProps) {
-  const isAuthenticated = await checkAuth();
-
-  if (!isAuthenticated) {
-    redirect("/admin/login");
-  }
-
   const params = await searchParams;
   const currentPage = parseInt(params.page || '1', 10);
   const itemsPerPage = 50;
@@ -24,15 +18,11 @@ export default async function AdminPage({ searchParams }: PageProps) {
   const totalPages = Math.ceil(totalProducts / itemsPerPage);
 
   return (
+    <AdminAuthGuard>
     <div>
       <div className="flex items-center justify-between mb-8">
         <h1 className="text-4xl font-bold">Admin Dashboard</h1>
-        <Link
-          href="/admin/logout"
-          className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded transition-colors"
-        >
-          Logout
-        </Link>
+        <AdminLogoutButton />
       </div>
 
       {/* Quick Actions */}
@@ -249,5 +239,6 @@ export default async function AdminPage({ searchParams }: PageProps) {
         </section>
       </div>
     </div>
+    </AdminAuthGuard>
   );
 }

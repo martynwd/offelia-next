@@ -1,23 +1,25 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
-// Note: We can't use the full auth.ts in Edge Runtime due to Node.js crypto
-// So we'll do a simpler check here - just verify the cookie exists
-// The actual validation happens in server components via checkAuth()
+// Middleware now just checks if authorization header exists
+// Actual token validation happens server-side in checkAuth()
 export function middleware(request: NextRequest) {
-  // Check if the request is for an admin route (except login)
+  // Check if the request is for an admin route (except login and API routes)
   if (request.nextUrl.pathname.startsWith('/admin') &&
-      !request.nextUrl.pathname.startsWith('/admin/login')) {
+      !request.nextUrl.pathname.startsWith('/admin/login') &&
+      !request.nextUrl.pathname.startsWith('/api/')) {
 
-    // Check for admin session cookie
-    const adminSession = request.cookies.get('admin_session');
+    // Check for Authorization header (set by client from localStorage)
+    const authHeader = request.headers.get('authorization');
 
-    // If no session cookie, redirect to login
-    // Detailed validation happens server-side
-    if (!adminSession?.value) {
-      const loginUrl = new URL('/admin/login', request.url);
-      return NextResponse.redirect(loginUrl);
-    }
+    console.log('Middleware check:', {
+      path: request.nextUrl.pathname,
+      hasAuth: !!authHeader
+    });
+
+    // If no auth header, this is a direct navigation - allow it
+    // The page component will handle auth check and redirect if needed
+    // This is because middleware can't access localStorage
   }
 
   return NextResponse.next();

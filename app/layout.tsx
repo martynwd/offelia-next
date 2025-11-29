@@ -67,7 +67,7 @@ export default function RootLayout({
                 </div>
 
               {/* Right: Phone and Mobile Menu */}
-              <div className="flex items-center gap-3 min-w-[300px] justify-center lg:gap-4 shrink-0">
+              <div className="flex items-center gap-3 min-w-[300px] max-sm:min-w-0 justify-center lg:gap-4 shrink-0">
                 {/* Phone - Hidden on mobile */}
                 <div className="text-right  hidden md:block">
                   <p className="text-sm font-medium">Наши телефоны:</p>

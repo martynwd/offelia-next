@@ -2,19 +2,11 @@ import Link from "next/link";
 import { getAllCategories, getActiveSliders } from "@/lib/db";
 import { HomepageSlider } from "@/components/homepage-slider";
 import { Clock, Phone, CreditCard, Calendar } from "lucide-react";
+import { CurrentDateTime } from "@/components/current-date-time";
 
 export default function Home() {
   const categories = getAllCategories();
   const slides = getActiveSliders();
-
-  // Get current date and time in Russian format
-  const currentDate = new Date().toLocaleString('ru-RU', {
-    day: '2-digit',
-    month: '2-digit',
-    year: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit'
-  });
 
   return (
     <div>
@@ -110,9 +102,7 @@ export default function Home() {
                   <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">
                     Обновлено:
                   </p>
-                  <p className="text-xl font-bold text-blue-600 dark:text-blue-400">
-                    {currentDate}
-                  </p>
+                  <CurrentDateTime />
                 </div>
               </div>
             </div>

@@ -5,11 +5,15 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+    container_name: offelia-next
     ports:
       - "3000:3000"
     volumes:
       - ./development.sqlite3:/app/data/development.sqlite3
+      - ./public:/app/public
     environment:
       - NODE_ENV=production
       - DATABASE_PATH=/app/data/development.sqlite3
+      - ADMIN_USERNAME=${ADMIN_USERNAME:-admin}
+      - ADMIN_PASSWORD=${ADMIN_PASSWORD:-admin}
     restart: unless-stopped

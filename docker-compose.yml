@@ -16,4 +16,5 @@ services:
       - DATABASE_PATH=/app/data/development.sqlite3
       - ADMIN_USERNAME=${ADMIN_USERNAME:-admin}
       - ADMIN_PASSWORD=${ADMIN_PASSWORD:-admin}
+      - USE_SECURE_COOKIES=${USE_SECURE_COOKIES:-true}
     restart: unless-stopped

@@ -149,9 +149,12 @@ export default async function ProductPage({ params }: PageProps) {
               size="lg"
               className="flex-1 bg-primary hover:bg-primary/90 h-14 max-sm:h-12"
               disabled={!product.avialability}
+              asChild
             >
-              <ShoppingCart className="mr-2 h-5 w-5" />
+              <a href="tel:+79276402000">
+                <ShoppingCart className="mr-2 h-5 w-5" />
                 Позвонить
+              </a>
             </Button>
           </div>
 

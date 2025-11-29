@@ -46,6 +46,12 @@ export default async function AdminPage({ searchParams }: PageProps) {
             🖼️ Manage Sliders
           </Link>
           <Link
+            href="/admin/import"
+            className="bg-orange-600 hover:bg-orange-700 text-white px-6 py-3 rounded-lg transition-colors font-medium"
+          >
+            📥 Import Products CSV
+          </Link>
+          <Link
             href="/admin/categories/new"
             className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg transition-colors font-medium"
           >
@@ -97,6 +103,12 @@ export default async function AdminPage({ searchParams }: PageProps) {
                     )}
                   </div>
                   <div className="flex gap-2">
+                    <Link
+                      href={`/admin/categories/${category.id}/filters`}
+                      className="bg-purple-600 hover:bg-purple-700 text-white px-3 py-1 rounded text-sm transition-colors"
+                    >
+                      Filters
+                    </Link>
                     <Link
                       href={`/admin/categories/${category.id}/edit`}
                       className="bg-yellow-500 hover:bg-yellow-600 text-white px-3 py-1 rounded text-sm transition-colors"

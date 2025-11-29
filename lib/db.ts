@@ -149,6 +149,32 @@ export const deleteProduct = (id: number) => {
   return stmt.run(id);
 };
 
+// Find product by name and category
+export const getProductByNameAndCategory = (name: string, categoryId: number) => {
+  const stmt = db.prepare('SELECT * FROM products WHERE name = ? AND category_id = ?');
+  return stmt.get(name, categoryId) as Product | undefined;
+};
+
+// Find category by name (case-insensitive)
+export const getCategoryByName = (name: string) => {
+  const stmt = db.prepare('SELECT * FROM categories WHERE LOWER(name) = LOWER(?)');
+  return stmt.get(name) as Category | undefined;
+};
+
+// Update product price and availability
+export const updateProductPriceAndAvailability = (id: number, price: number, availability: boolean) => {
+  const stmt = db.prepare(
+    "UPDATE products SET price = ?, avialability = ?, updated_at = datetime('now') WHERE id = ?"
+  );
+  return stmt.run(price, availability ? 1 : 0, id);
+};
+
+// Mark all products as out of stock
+export const markAllProductsOutOfStock = () => {
+  const stmt = db.prepare("UPDATE products SET avialability = 0, updated_at = datetime('now')");
+  return stmt.run();
+};
+
 // Slider interface
 export interface Slider {
   id: number;
@@ -161,6 +187,32 @@ export interface Slider {
   user_id: number;
   created_at: string;
   updated_at: string;
+}
+
+export interface FilterDefinition {
+  id: number;
+  category_id: number;
+  filter_name: string;
+  filter_type: 'checkbox' | 'radio' | 'range' | 'select';
+  display_order: number;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface FilterOption {
+  id: number;
+  filter_definition_id: number;
+  option_value: string;
+  display_order: number;
+  created_at: string;
+}
+
+export interface ProductFilter {
+  id: number;
+  product_id: number;
+  filter_definition_id: number;
+  filter_value: string;
+  created_at: string;
 }
 
 // Slider queries
@@ -213,6 +265,100 @@ export const updateSlider = (
 export const deleteSlider = (id: number) => {
   const stmt = db.prepare('DELETE FROM sliders WHERE id = ?');
   return stmt.run(id);
+};
+
+// Filter queries
+export const getFiltersByCategory = (categoryId: number) => {
+  const stmt = db.prepare(`
+    SELECT * FROM filter_definitions
+    WHERE category_id = ?
+    ORDER BY display_order ASC, filter_name ASC
+  `);
+  return stmt.all(categoryId) as FilterDefinition[];
+};
+
+export const getFilterOptions = (filterDefinitionId: number) => {
+  const stmt = db.prepare(`
+    SELECT * FROM filter_options
+    WHERE filter_definition_id = ?
+    ORDER BY display_order ASC, option_value ASC
+  `);
+  return stmt.all(filterDefinitionId) as FilterOption[];
+};
+
+export const getFiltersWithOptions = (categoryId: number) => {
+  const filters = getFiltersByCategory(categoryId);
+  return filters.map(filter => ({
+    ...filter,
+    options: getFilterOptions(filter.id)
+  }));
+};
+
+export const createFilterDefinition = (
+  categoryId: number,
+  filterName: string,
+  filterType: string,
+  displayOrder: number = 0
+) => {
+  const stmt = db.prepare(`
+    INSERT INTO filter_definitions (category_id, filter_name, filter_type, display_order)
+    VALUES (?, ?, ?, ?)
+  `);
+  const result = stmt.run(categoryId, filterName, filterType, displayOrder);
+  return result.lastInsertRowid;
+};
+
+export const createFilterOption = (
+  filterDefinitionId: number,
+  optionValue: string,
+  displayOrder: number = 0
+) => {
+  const stmt = db.prepare(`
+    INSERT INTO filter_options (filter_definition_id, option_value, display_order)
+    VALUES (?, ?, ?)
+  `);
+  const result = stmt.run(filterDefinitionId, optionValue, displayOrder);
+  return result.lastInsertRowid;
+};
+
+export const deleteFilterDefinition = (id: number) => {
+  const stmt = db.prepare('DELETE FROM filter_definitions WHERE id = ?');
+  return stmt.run(id);
+};
+
+export const deleteFilterOption = (id: number) => {
+  const stmt = db.prepare('DELETE FROM filter_options WHERE id = ?');
+  return stmt.run(id);
+};
+
+export const setProductFilter = (
+  productId: number,
+  filterDefinitionId: number,
+  filterValue: string
+) => {
+  const stmt = db.prepare(`
+    INSERT OR REPLACE INTO product_filters (product_id, filter_definition_id, filter_value)
+    VALUES (?, ?, ?)
+  `);
+  return stmt.run(productId, filterDefinitionId, filterValue);
+};
+
+export const getProductFilters = (productId: number) => {
+  const stmt = db.prepare(`
+    SELECT pf.*, fd.filter_name, fd.filter_type
+    FROM product_filters pf
+    JOIN filter_definitions fd ON pf.filter_definition_id = fd.id
+    WHERE pf.product_id = ?
+  `);
+  return stmt.all(productId) as ProductFilter[];
+};
+
+export const deleteProductFilter = (productId: number, filterDefinitionId: number) => {
+  const stmt = db.prepare(`
+    DELETE FROM product_filters
+    WHERE product_id = ? AND filter_definition_id = ?
+  `);
+  return stmt.run(productId, filterDefinitionId);
 };
 
 export default db;

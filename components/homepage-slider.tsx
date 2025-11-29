@@ -52,7 +52,7 @@ export function HomepageSlider({ slides }: HomepageSliderProps) {
 
   return (
     <div
-      className="relative h-[64vh] aspect-video rounded-lg overflow-hidden shadow-xl group"
+      className="relative h-[64vh] aspect-video rounded-lg overflow-hidden group"
       onMouseEnter={() => setIsAutoPlaying(false)}
       onMouseLeave={() => setIsAutoPlaying(true)}
     >
@@ -74,17 +74,17 @@ export function HomepageSlider({ slides }: HomepageSliderProps) {
             />
             {/* Overlay gradient for better text readability */}
             {(slide.title || slide.description) && (
-              <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+              <div className="absolute inset-0" />
             )}
 
             {/* Slide content */}
             {(slide.title || slide.description) && (
               <div className="absolute bottom-0 left-0 right-0 p-8 text-white">
-                {slide.title && (
+{/*                {slide.title && (
                   <h2 className="text-2xl lg:text-4xl font-bold mb-2">
                     {slide.title}
                   </h2>
-                )}
+                )}*/}
                 {slide.description && (
                   <p className="text-lg lg:text-xl opacity-90">
                     {slide.description}

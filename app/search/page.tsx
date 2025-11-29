@@ -2,6 +2,9 @@ import { getAllCategories, getAllProducts } from "@/lib/db";
 import Link from "next/link";
 import Image from "next/image";
 
+// Mark this page as dynamic since it uses searchParams
+export const dynamic = 'force-dynamic';
+
 interface PageProps {
   searchParams: Promise<{ q?: string }>;
 }

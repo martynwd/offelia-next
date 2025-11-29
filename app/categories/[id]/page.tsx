@@ -4,6 +4,9 @@ import Image from "next/image";
 import Link from "next/link";
 import { ProductFilters } from "@/components/product-filters";
 
+// Mark this page as dynamic since it uses params and searchParams
+export const dynamic = 'force-dynamic';
+
 interface PageProps {
   params: Promise<{
     id: string;

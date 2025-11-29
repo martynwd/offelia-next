@@ -19,7 +19,7 @@ RUN apt-get update && apt-get install -y \
 COPY package.json package-lock.json* ./
 
 # Install dependencies with timeout settings and npm mirror
-RUN npm ci --no-audit
+RUN npm ci
 
 # Rebuild the source code only when needed
 FROM base AS builder

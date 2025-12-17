@@ -1,19 +1,13 @@
 import { getAllSliders } from "@/lib/db";
-import { checkAuth } from "@/lib/auth";
-import { redirect } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
+import { AdminAuthGuard } from "@/components/admin-auth-guard";
 
 export default async function AdminSlidersPage() {
-  const isAuthenticated = await checkAuth();
-
-  if (!isAuthenticated) {
-    redirect("/admin/login");
-  }
-
   const sliders = getAllSliders();
 
   return (
+    <AdminAuthGuard>
     <div>
       <div className="flex items-center justify-between mb-8">
         <h1 className="text-4xl font-bold">Manage Sliders</h1>
@@ -102,5 +96,6 @@ export default async function AdminSlidersPage() {
         )}
       </div>
     </div>
+    </AdminAuthGuard>
   );
 }

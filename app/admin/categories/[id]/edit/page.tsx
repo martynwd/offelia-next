@@ -1,5 +1,6 @@
 import { notFound, redirect } from "next/navigation";
 import { getCategoryById, updateCategory } from "@/lib/db";
+import { AdminAuthGuard } from "@/components/admin-auth-guard";
 
 interface PageProps {
   params: Promise<{
@@ -34,6 +35,7 @@ export default async function EditCategoryPage({ params }: PageProps) {
   }
 
   return (
+    <AdminAuthGuard>
     <div className="max-w-2xl mx-auto">
       <h1 className="text-4xl font-bold mb-8">Edit Category</h1>
 
@@ -93,5 +95,6 @@ export default async function EditCategoryPage({ params }: PageProps) {
         </div>
       </form>
     </div>
+    </AdminAuthGuard>
   );
 }

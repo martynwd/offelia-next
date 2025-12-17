@@ -24,8 +24,38 @@ export default function EditSliderPage() {
   const [imageUrl, setImageUrl] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   useEffect(() => {
+    const token = localStorage.getItem('admin_token');
+
+    if (!token) {
+      router.push('/admin/login');
+      return;
+    }
+
+    fetch('/api/auth/verify', {
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    })
+      .then(res => {
+        if (!res.ok) {
+          localStorage.removeItem('admin_token');
+          router.push('/admin/login');
+        } else {
+          setIsAuthenticated(true);
+        }
+      })
+      .catch(() => {
+        localStorage.removeItem('admin_token');
+        router.push('/admin/login');
+      });
+  }, [router]);
+
+  useEffect(() => {
+    if (!isAuthenticated) return;
+
     async function fetchSlider() {
       try {
         const response = await fetch(`/api/sliders/${sliderId}`);
@@ -48,7 +78,7 @@ export default function EditSliderPage() {
     if (!isNaN(sliderId)) {
       fetchSlider();
     }
-  }, [sliderId, router]);
+  }, [sliderId, router, isAuthenticated]);
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();

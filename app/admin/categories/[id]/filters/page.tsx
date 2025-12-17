@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import { getCategoryById, getFiltersWithOptions } from "@/lib/db";
 import Link from "next/link";
 import { FilterList } from "@/components/admin/filter-list";
+import { AdminAuthGuard } from "@/components/admin-auth-guard";
 
 interface PageProps {
   params: Promise<{
@@ -26,6 +27,7 @@ export default async function CategoryFiltersPage({ params }: PageProps) {
   const filters = getFiltersWithOptions(categoryId);
 
   return (
+    <AdminAuthGuard>
     <div>
       <div className="flex items-center justify-between mb-8">
         <div>
@@ -68,5 +70,6 @@ export default async function CategoryFiltersPage({ params }: PageProps) {
         <FilterList filters={filters} categoryId={categoryId} />
       )}
     </div>
+    </AdminAuthGuard>
   );
 }

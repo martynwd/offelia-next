@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { ImageUpload } from "@/components/image-upload";
@@ -9,6 +9,36 @@ export default function NewSliderPage() {
   const router = useRouter();
   const [imageUrl, setImageUrl] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isChecking, setIsChecking] = useState(true);
+
+  useEffect(() => {
+    const token = localStorage.getItem('admin_token');
+
+    if (!token) {
+      router.push('/admin/login');
+      return;
+    }
+
+    fetch('/api/auth/verify', {
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    })
+      .then(res => {
+        if (!res.ok) {
+          localStorage.removeItem('admin_token');
+          router.push('/admin/login');
+        } else {
+          setIsAuthenticated(true);
+          setIsChecking(false);
+        }
+      })
+      .catch(() => {
+        localStorage.removeItem('admin_token');
+        router.push('/admin/login');
+      });
+  }, [router]);
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -44,6 +74,18 @@ export default function NewSliderPage() {
     } finally {
       setIsSubmitting(false);
     }
+  }
+
+  if (isChecking) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="text-lg">Loading...</div>
+      </div>
+    );
+  }
+
+  if (!isAuthenticated) {
+    return null;
   }
 
   return (

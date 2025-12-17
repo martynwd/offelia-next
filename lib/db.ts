@@ -145,6 +145,27 @@ export const updateProduct = (
 };
 
 export const deleteProduct = (id: number) => {
+  // Get the product to find the image URL
+  const product = getProductById(id);
+
+  if (product && product.photo_url) {
+    // Delete the physical file if it's stored locally (starts with /)
+    if (product.photo_url.startsWith('/') && !product.photo_url.startsWith('http')) {
+      try {
+        const fs = require('fs');
+        const imagePath = path.join(process.cwd(), 'public', product.photo_url);
+        if (fs.existsSync(imagePath)) {
+          fs.unlinkSync(imagePath);
+          console.log(`Deleted image file: ${imagePath}`);
+        }
+      } catch (error) {
+        console.error('Error deleting image file:', error);
+        // Continue with database deletion even if file deletion fails
+      }
+    }
+  }
+
+  // Delete from database
   const stmt = db.prepare('DELETE FROM products WHERE id = ?');
   return stmt.run(id);
 };
@@ -263,6 +284,27 @@ export const updateSlider = (
 };
 
 export const deleteSlider = (id: number) => {
+  // Get the slider to find the image URL
+  const slider = getSliderById(id);
+
+  if (slider && slider.image_url) {
+    // Delete the physical file if it's stored locally (starts with /)
+    if (slider.image_url.startsWith('/') && !slider.image_url.startsWith('http')) {
+      try {
+        const fs = require('fs');
+        const imagePath = path.join(process.cwd(), 'public', slider.image_url);
+        if (fs.existsSync(imagePath)) {
+          fs.unlinkSync(imagePath);
+          console.log(`Deleted image file: ${imagePath}`);
+        }
+      } catch (error) {
+        console.error('Error deleting image file:', error);
+        // Continue with database deletion even if file deletion fails
+      }
+    }
+  }
+
+  // Delete from database
   const stmt = db.prepare('DELETE FROM sliders WHERE id = ?');
   return stmt.run(id);
 };

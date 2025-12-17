@@ -48,8 +48,12 @@ export function ImageUpload({ currentImageUrl, onImageChange, name = "image_url"
       const formData = new FormData();
       formData.append('file', file);
 
+      const token = localStorage.getItem('admin_token');
       const response = await fetch('/api/upload', {
         method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
         body: formData,
       });
 

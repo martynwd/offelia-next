@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { cookies } from 'next/headers';
+import { validateSessionToken } from '@/lib/auth';
 import {
   getCategoryByName,
   getProductByNameAndCategory,
@@ -16,11 +16,20 @@ interface CSVRow {
 
 export async function POST(request: NextRequest) {
   try {
-    // Check authentication
-    const cookieStore = await cookies();
-    const session = cookieStore.get('admin_session');
+    // Check authentication - use Bearer token from localStorage
+    const authHeader = request.headers.get('authorization');
 
-    if (!session || session.value !== 'authenticated') {
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      return NextResponse.json(
+        { error: 'Unauthorized' },
+        { status: 401 }
+      );
+    }
+
+    const token = authHeader.substring(7);
+    const result = validateSessionToken(token);
+
+    if (!result.valid) {
       return NextResponse.json(
         { error: 'Unauthorized' },
         { status: 401 }

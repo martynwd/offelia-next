@@ -94,11 +94,13 @@ export default function ImportPage() {
               price: row[2],
             }));
 
-            // Send to API
+            // Send to API with auth token
+            const token = localStorage.getItem('admin_token');
             const response = await fetch('/api/admin/import-products', {
               method: 'POST',
               headers: {
                 'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`,
               },
               body: JSON.stringify({
                 csvData: JSON.stringify(rows),

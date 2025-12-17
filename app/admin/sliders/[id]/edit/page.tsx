@@ -87,10 +87,12 @@ export default function EditSliderPage() {
     const formData = new FormData(e.currentTarget);
 
     try {
+      const token = localStorage.getItem('admin_token');
       const response = await fetch(`/api/sliders/${sliderId}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`,
         },
         body: JSON.stringify({
           image_url: imageUrl,

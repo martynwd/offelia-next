@@ -37,8 +37,12 @@ export function FilterList({ filters, categoryId }: FilterListProps) {
     }
 
     try {
+      const token = localStorage.getItem('admin_token');
       const response = await fetch(`/api/filters/${filterId}`, {
         method: "DELETE",
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
       });
 
       if (response.ok) {
@@ -58,8 +62,12 @@ export function FilterList({ filters, categoryId }: FilterListProps) {
     }
 
     try {
+      const token = localStorage.getItem('admin_token');
       const response = await fetch(`/api/filters/${filterId}/options/${optionId}`, {
         method: "DELETE",
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
       });
 
       if (response.ok) {

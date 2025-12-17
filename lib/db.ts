@@ -57,7 +57,7 @@ export const getCategoryById = (id: number) => {
 
 export const createCategory = (name: string, description: string | null, userId: number, menuDisplay: boolean = false) => {
   const stmt = db.prepare(
-    'INSERT INTO categories (name, description, user_id, menu_display, created_at, updated_at) VALUES (?, ?, ?, ?, datetime("now"), datetime("now"))'
+    "INSERT INTO categories (name, description, user_id, menu_display, created_at, updated_at) VALUES (?, ?, ?, ?, datetime('now'), datetime('now'))"
   );
   const result = stmt.run(name, description, userId, menuDisplay ? 1 : 0);
   return result.lastInsertRowid;
@@ -65,7 +65,7 @@ export const createCategory = (name: string, description: string | null, userId:
 
 export const updateCategory = (id: number, name: string, description: string | null, menuDisplay: boolean) => {
   const stmt = db.prepare(
-    'UPDATE categories SET name = ?, description = ?, menu_display = ?, updated_at = datetime("now") WHERE id = ?'
+    "UPDATE categories SET name = ?, description = ?, menu_display = ?, updated_at = datetime('now') WHERE id = ?"
   );
   return stmt.run(name, description, menuDisplay ? 1 : 0, id);
 };
@@ -123,7 +123,7 @@ export const createProduct = (
   photoUrl: string | null = null
 ) => {
   const stmt = db.prepare(
-    'INSERT INTO products (name, description, price, category_id, user_id, avialability, photo_url, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, datetime("now"), datetime("now"))'
+    "INSERT INTO products (name, description, price, category_id, user_id, avialability, photo_url, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, datetime('now'), datetime('now'))"
   );
   const result = stmt.run(name, description, price, categoryId, userId, availability ? 1 : 0, photoUrl);
   return result.lastInsertRowid;
@@ -139,7 +139,7 @@ export const updateProduct = (
   photoUrl: string | null
 ) => {
   const stmt = db.prepare(
-    'UPDATE products SET name = ?, description = ?, price = ?, category_id = ?, avialability = ?, photo_url = ?, updated_at = datetime("now") WHERE id = ?'
+    "UPDATE products SET name = ?, description = ?, price = ?, category_id = ?, avialability = ?, photo_url = ?, updated_at = datetime('now') WHERE id = ?"
   );
   return stmt.run(name, description, price, categoryId, availability ? 1 : 0, photoUrl, id);
 };

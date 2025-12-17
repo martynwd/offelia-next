@@ -1,6 +1,5 @@
 import { notFound, redirect } from "next/navigation";
 import { getProductById, updateProduct, getAllCategories } from "@/lib/db";
-import { AdminAuthGuard } from "@/components/admin-auth-guard";
 
 interface PageProps {
   params: Promise<{
@@ -40,7 +39,6 @@ export default async function EditProductPage({ params }: PageProps) {
   }
 
   return (
-    <AdminAuthGuard>
     <div className="max-w-2xl mx-auto">
       <h1 className="text-4xl font-bold mb-8">Edit Product</h1>
 
@@ -150,6 +148,5 @@ export default async function EditProductPage({ params }: PageProps) {
         </div>
       </form>
     </div>
-    </AdminAuthGuard>
   );
 }

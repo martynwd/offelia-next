@@ -1,6 +1,5 @@
 import { redirect } from "next/navigation";
 import { createProduct, getAllCategories } from "@/lib/db";
-import { AdminAuthGuard } from "@/components/admin-auth-guard";
 
 export default function NewProductPage() {
   const categories = getAllCategories();
@@ -22,7 +21,6 @@ export default function NewProductPage() {
   }
 
   return (
-    <AdminAuthGuard>
     <div className="max-w-2xl mx-auto">
       <h1 className="text-4xl font-bold mb-8">Add New Product</h1>
 
@@ -127,6 +125,5 @@ export default function NewProductPage() {
         </div>
       </form>
     </div>
-    </AdminAuthGuard>
   );
 }

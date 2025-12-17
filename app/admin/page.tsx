@@ -1,6 +1,5 @@
 import { getAllCategories, getProductsPaginated, getTotalProductsCount } from "@/lib/db";
 import Link from "next/link";
-import { AdminAuthGuard } from "@/components/admin-auth-guard";
 import { AdminLogoutButton } from "@/components/admin-logout-button";
 
 interface PageProps {
@@ -18,7 +17,6 @@ export default async function AdminPage({ searchParams }: PageProps) {
   const totalPages = Math.ceil(totalProducts / itemsPerPage);
 
   return (
-    <AdminAuthGuard>
     <div>
       <div className="flex items-center justify-between mb-8">
         <h1 className="text-4xl font-bold">Admin Dashboard</h1>
@@ -239,6 +237,5 @@ export default async function AdminPage({ searchParams }: PageProps) {
         </section>
       </div>
     </div>
-    </AdminAuthGuard>
   );
 }

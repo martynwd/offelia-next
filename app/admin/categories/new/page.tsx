@@ -1,6 +1,5 @@
 import { redirect } from "next/navigation";
 import { createCategory } from "@/lib/db";
-import { AdminAuthGuard } from "@/components/admin-auth-guard";
 
 export default function NewCategoryPage() {
   async function handleSubmit(formData: FormData) {
@@ -17,7 +16,6 @@ export default function NewCategoryPage() {
   }
 
   return (
-    <AdminAuthGuard>
     <div className="max-w-2xl mx-auto">
       <h1 className="text-4xl font-bold mb-8">Add New Category</h1>
 
@@ -74,6 +72,5 @@ export default function NewCategoryPage() {
         </div>
       </form>
     </div>
-    </AdminAuthGuard>
   );
 }

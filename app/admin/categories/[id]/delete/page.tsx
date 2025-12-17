@@ -1,6 +1,5 @@
 import { notFound, redirect } from "next/navigation";
 import { getCategoryById, deleteCategory, getProductsByCategoryId } from "@/lib/db";
-import { AdminAuthGuard } from "@/components/admin-auth-guard";
 
 interface PageProps {
   params: Promise<{
@@ -32,7 +31,6 @@ export default async function DeleteCategoryPage({ params }: PageProps) {
   }
 
   return (
-    <AdminAuthGuard>
     <div className="max-w-2xl mx-auto">
       <h1 className="text-4xl font-bold mb-8">Delete Category</h1>
 
@@ -77,6 +75,5 @@ export default async function DeleteCategoryPage({ params }: PageProps) {
         </form>
       </div>
     </div>
-    </AdminAuthGuard>
   );
 }

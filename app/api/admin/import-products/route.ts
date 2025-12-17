@@ -16,30 +16,38 @@ interface CSVRow {
 
 export async function POST(request: NextRequest) {
   try {
+    console.log('[IMPORT] Starting import process');
+
     // Check authentication - use Bearer token from localStorage
     const authHeader = request.headers.get('authorization');
+    console.log('[IMPORT] Auth header present:', !!authHeader);
 
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      console.error('[IMPORT] Missing or invalid authorization header');
       return NextResponse.json(
-        { error: 'Unauthorized' },
+        { error: 'Unauthorized - Missing or invalid authorization header' },
         { status: 401 }
       );
     }
 
     const token = authHeader.substring(7);
     const result = validateSessionToken(token);
+    console.log('[IMPORT] Token validation result:', result);
 
     if (!result.valid) {
+      console.error('[IMPORT] Invalid token');
       return NextResponse.json(
-        { error: 'Unauthorized' },
+        { error: 'Unauthorized - Invalid token' },
         { status: 401 }
       );
     }
 
     const body = await request.json();
     const csvData = body.csvData as string;
+    console.log('[IMPORT] CSV data received, length:', csvData?.length || 0);
 
     if (!csvData) {
+      console.error('[IMPORT] No CSV data provided');
       return NextResponse.json(
         { error: 'No CSV data provided' },
         { status: 400 }
@@ -47,7 +55,17 @@ export async function POST(request: NextRequest) {
     }
 
     // Parse CSV data (already parsed by papaparse on client)
-    const rows: CSVRow[] = JSON.parse(csvData);
+    let rows: CSVRow[];
+    try {
+      rows = JSON.parse(csvData);
+      console.log('[IMPORT] Parsed rows count:', rows.length);
+    } catch (parseError) {
+      console.error('[IMPORT] Failed to parse CSV data:', parseError);
+      return NextResponse.json(
+        { error: 'Invalid CSV data format', details: String(parseError) },
+        { status: 400 }
+      );
+    }
 
     // Statistics
     let created = 0;
@@ -55,19 +73,32 @@ export async function POST(request: NextRequest) {
     let skipped = 0;
     const errors: string[] = [];
 
+    console.log('[IMPORT] Marking all products as out of stock');
     // First, mark all products as out of stock
-    markAllProductsOutOfStock();
+    try {
+      markAllProductsOutOfStock();
+      console.log('[IMPORT] Successfully marked all products as out of stock');
+    } catch (markError) {
+      console.error('[IMPORT] Error marking products out of stock:', markError);
+      errors.push(`Failed to mark products out of stock: ${String(markError)}`);
+    }
 
     // Process each row
-    for (const row of rows) {
+    console.log('[IMPORT] Starting to process rows');
+    for (let i = 0; i < rows.length; i++) {
+      const row = rows[i];
       try {
         const categoryName = row.category?.trim();
         const productName = row.name?.trim();
         const priceStr = row.price?.trim();
 
+        console.log(`[IMPORT] Processing row ${i + 1}/${rows.length}:`, { categoryName, productName, priceStr });
+
         if (!categoryName || !productName || !priceStr) {
           skipped++;
-          errors.push(`Skipped row: missing data - ${JSON.stringify(row)}`);
+          const error = `Row ${i + 1}: missing data - category: ${categoryName}, name: ${productName}, price: ${priceStr}`;
+          console.warn(`[IMPORT] ${error}`);
+          errors.push(error);
           continue;
         }
 
@@ -75,7 +106,9 @@ export async function POST(request: NextRequest) {
         const category = getCategoryByName(categoryName);
         if (!category) {
           skipped++;
-          errors.push(`Category not found: ${categoryName} for product ${productName}`);
+          const error = `Row ${i + 1}: Category not found: "${categoryName}" for product "${productName}"`;
+          console.warn(`[IMPORT] ${error}`);
+          errors.push(error);
           continue;
         }
 
@@ -83,7 +116,9 @@ export async function POST(request: NextRequest) {
         const price = parseFloat(priceStr);
         if (isNaN(price)) {
           skipped++;
-          errors.push(`Invalid price for ${productName}: ${priceStr}`);
+          const error = `Row ${i + 1}: Invalid price for "${productName}": "${priceStr}"`;
+          console.warn(`[IMPORT] ${error}`);
+          errors.push(error);
           continue;
         }
 
@@ -92,10 +127,12 @@ export async function POST(request: NextRequest) {
 
         if (existingProduct) {
           // Update existing product: set price and mark as available
+          console.log(`[IMPORT] Updating existing product: ${productName} (ID: ${existingProduct.id})`);
           updateProductPriceAndAvailability(existingProduct.id, price, true);
           updated++;
         } else {
           // Create new product with availability = true, user_id = 1 (admin)
+          console.log(`[IMPORT] Creating new product: ${productName}`);
           createProduct(
             productName,
             null, // description
@@ -109,10 +146,15 @@ export async function POST(request: NextRequest) {
         }
       } catch (error) {
         skipped++;
-        errors.push(`Error processing row ${JSON.stringify(row)}: ${error}`);
+        const errorMsg = `Row ${i + 1}: Error processing "${row.name}" - ${error instanceof Error ? error.message : String(error)}`;
+        console.error(`[IMPORT] ${errorMsg}`, error);
+        errors.push(errorMsg);
       }
     }
 
+    console.log('[IMPORT] Processing complete. Stats:', { total: rows.length, created, updated, skipped });
+
+    console.log('[IMPORT] Returning success response');
     return NextResponse.json({
       success: true,
       stats: {
@@ -124,9 +166,15 @@ export async function POST(request: NextRequest) {
       errors: errors.length > 0 ? errors : undefined,
     });
   } catch (error) {
-    console.error('Import error:', error);
+    console.error('[IMPORT] Critical error:', error);
+    console.error('[IMPORT] Error stack:', error instanceof Error ? error.stack : 'No stack trace');
+
     return NextResponse.json(
-      { error: 'Import failed', details: String(error) },
+      {
+        error: 'Import failed',
+        details: error instanceof Error ? error.message : String(error),
+        stack: error instanceof Error ? error.stack : undefined
+      },
       { status: 500 }
     );
   }

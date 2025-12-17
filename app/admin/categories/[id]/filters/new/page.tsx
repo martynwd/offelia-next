@@ -1,7 +1,6 @@
 import { notFound, redirect } from "next/navigation";
 import { getCategoryById, createFilterDefinition } from "@/lib/db";
 import Link from "next/link";
-import { AdminAuthGuard } from "@/components/admin-auth-guard";
 
 interface PageProps {
   params: Promise<{
@@ -39,7 +38,6 @@ export default async function NewFilterPage({ params }: PageProps) {
   }
 
   return (
-    <AdminAuthGuard>
     <div>
       <div className="flex items-center justify-between mb-8">
         <h1 className="text-4xl font-bold">
@@ -128,6 +126,5 @@ export default async function NewFilterPage({ params }: PageProps) {
         </form>
       </div>
     </div>
-    </AdminAuthGuard>
   );
 }

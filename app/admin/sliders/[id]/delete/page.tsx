@@ -2,7 +2,6 @@ import { getSliderById, deleteSlider } from "@/lib/db";
 import { redirect, notFound } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
-import { AdminAuthGuard } from "@/components/admin-auth-guard";
 
 interface PageProps {
   params: Promise<{ id: string }>;
@@ -29,7 +28,6 @@ export default async function DeleteSliderPage({ params }: PageProps) {
   }
 
   return (
-    <AdminAuthGuard>
     <div>
       <div className="flex items-center justify-between mb-8">
         <h1 className="text-4xl font-bold">Delete Slider</h1>
@@ -101,6 +99,5 @@ export default async function DeleteSliderPage({ params }: PageProps) {
         </form>
       </div>
     </div>
-    </AdminAuthGuard>
   );
 }

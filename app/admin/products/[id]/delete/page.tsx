@@ -1,38 +1,127 @@
-import { notFound, redirect } from "next/navigation";
-import { getProductById, deleteProduct, getCategoryById } from "@/lib/db";
-import { AdminAuthGuard } from "@/components/admin-auth-guard";
+"use client";
 
-interface PageProps {
-  params: Promise<{
-    id: string;
-  }>;
+import { useEffect, useState } from "react";
+import { useRouter, useParams } from "next/navigation";
+
+interface Product {
+  id: number;
+  name: string;
+  description: string | null;
+  price: number | null;
+  category_id: number;
+  avialability: boolean;
 }
 
-export default async function DeleteProductPage({ params }: PageProps) {
-  const { id } = await params;
-  const productId = parseInt(id, 10);
+interface Category {
+  id: number;
+  name: string;
+}
 
-  if (isNaN(productId)) {
-    notFound();
+export default function DeleteProductPage() {
+  const router = useRouter();
+  const params = useParams();
+  const productId = parseInt(params.id as string, 10);
+
+  const [product, setProduct] = useState<Product | null>(null);
+  const [category, setCategory] = useState<Category | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+
+  useEffect(() => {
+    const token = localStorage.getItem('admin_token');
+
+    if (!token) {
+      router.push('/admin/login');
+      return;
+    }
+
+    fetch('/api/auth/verify', {
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    })
+      .then(res => {
+        if (!res.ok) {
+          localStorage.removeItem('admin_token');
+          router.push('/admin/login');
+        } else {
+          setIsAuthenticated(true);
+        }
+      })
+      .catch(() => {
+        localStorage.removeItem('admin_token');
+        router.push('/admin/login');
+      });
+  }, [router]);
+
+  useEffect(() => {
+    if (!isAuthenticated) return;
+
+    async function fetchData() {
+      try {
+        const response = await fetch(`/api/products/${productId}`);
+        if (response.ok) {
+          const data = await response.json();
+          setProduct(data.product);
+          setCategory(data.category);
+        } else {
+          router.push('/admin');
+        }
+      } catch (error) {
+        console.error('Error fetching product:', error);
+        router.push('/admin');
+      } finally {
+        setIsLoading(false);
+      }
+    }
+
+    if (!isNaN(productId)) {
+      fetchData();
+    }
+  }, [productId, router, isAuthenticated]);
+
+  async function handleDelete() {
+    if (!confirm('Are you sure you want to delete this product?')) {
+      return;
+    }
+
+    setIsDeleting(true);
+    try {
+      const token = localStorage.getItem('admin_token');
+      const response = await fetch(`/api/products/${productId}`, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+      });
+
+      if (response.ok) {
+        router.push('/admin');
+      } else {
+        alert('Failed to delete product');
+      }
+    } catch (error) {
+      console.error('Error deleting product:', error);
+      alert('Failed to delete product');
+    } finally {
+      setIsDeleting(false);
+    }
   }
 
-  const product = getProductById(productId);
+  if (isLoading || !isAuthenticated) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="text-lg">Loading...</div>
+      </div>
+    );
+  }
 
   if (!product) {
-    notFound();
-  }
-
-  const category = getCategoryById(product.category_id);
-
-  async function handleDelete(formData: FormData) {
-    "use server";
-
-    deleteProduct(productId);
-    redirect("/admin");
+    return null;
   }
 
   return (
-    <AdminAuthGuard>
     <div className="max-w-2xl mx-auto">
       <h1 className="text-4xl font-bold mb-8">Delete Product</h1>
 
@@ -66,22 +155,22 @@ export default async function DeleteProductPage({ params }: PageProps) {
           </div>
         </div>
 
-        <form action={handleDelete} className="flex gap-4">
+        <div className="flex gap-4">
           <button
-            type="submit"
-            className="bg-red-600 hover:bg-red-700 text-white px-6 py-2 rounded-lg transition-colors"
+            onClick={handleDelete}
+            disabled={isDeleting}
+            className="bg-red-600 hover:bg-red-700 disabled:bg-gray-400 text-white px-6 py-2 rounded-lg transition-colors"
           >
-            Confirm Delete
+            {isDeleting ? 'Deleting...' : 'Confirm Delete'}
           </button>
-          <a
-            href="/admin"
-            className="bg-gray-500 hover:bg-gray-600 text-white px-6 py-2 rounded-lg transition-colors inline-block"
+          <button
+            onClick={() => router.push('/admin')}
+            className="bg-gray-500 hover:bg-gray-600 text-white px-6 py-2 rounded-lg transition-colors"
           >
             Cancel
-          </a>
-        </form>
+          </button>
+        </div>
       </div>
     </div>
-    </AdminAuthGuard>
   );
 }

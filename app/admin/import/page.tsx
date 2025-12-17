@@ -110,11 +110,16 @@ export default function ImportPage() {
             const data = await response.json();
 
             if (!response.ok) {
-              throw new Error(data.error || 'Import failed');
+              console.error('[CLIENT] Import failed:', data);
+              const errorDetails = data.details ? ` - ${data.details}` : '';
+              const errorStack = data.stack ? `\n\nStack trace:\n${data.stack}` : '';
+              throw new Error(`${data.error || 'Import failed'}${errorDetails}${errorStack}`);
             }
 
+            console.log('[CLIENT] Import successful:', data);
             setResult(data);
           } catch (err) {
+            console.error('[CLIENT] Import error:', err);
             setError(err instanceof Error ? err.message : 'Import failed');
           } finally {
             setIsImporting(false);
@@ -226,11 +231,15 @@ export default function ImportPage() {
         <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-6 mb-6">
           <div className="flex items-start gap-3">
             <XCircle className="h-6 w-6 text-red-600 dark:text-red-400 flex-shrink-0 mt-0.5" />
-            <div>
-              <h3 className="font-semibold text-red-900 dark:text-red-100 mb-1">
+            <div className="flex-1">
+              <h3 className="font-semibold text-red-900 dark:text-red-100 mb-2">
                 Ошибка импорта
               </h3>
-              <p className="text-red-700 dark:text-red-300">{error}</p>
+              <div className="bg-white dark:bg-gray-800 border border-red-300 dark:border-red-700 rounded p-4 max-h-96 overflow-y-auto">
+                <pre className="text-sm text-red-700 dark:text-red-300 whitespace-pre-wrap break-words font-mono">
+                  {error}
+                </pre>
+              </div>
             </div>
           </div>
         </div>

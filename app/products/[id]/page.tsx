@@ -1,8 +1,9 @@
 import { notFound } from "next/navigation";
 import { getProductById, getCategoryById } from "@/lib/db";
+import { checkAuth } from "@/lib/auth";
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowLeft, ShoppingCart } from "lucide-react";
+import { ArrowLeft, ShoppingCart, Pencil } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 // Mark this page as dynamic since it uses params
@@ -29,6 +30,7 @@ export default async function ProductPage({ params }: PageProps) {
   }
 
   const category = getCategoryById(product.category_id);
+  const isAdmin = await checkAuth();
 
   return (
     <div className="max-w-6xl mx-auto">
@@ -109,7 +111,16 @@ export default async function ProductPage({ params }: PageProps) {
           )}
 
           {/* Product name */}
-          <h1 className="text-3xl lg:text-4xl font-bold mb-4">{product.name}</h1>
+          <div className="flex items-start gap-3 mb-4">
+            <h1 className="text-3xl lg:text-4xl font-bold">{product.name}</h1>
+            {isAdmin && (
+              <Button asChild size="icon" variant="outline" className="shrink-0 mt-1">
+                <Link href={`/admin/products/${product.id}/edit`}>
+                  <Pencil className="h-4 w-4" />
+                </Link>
+              </Button>
+            )}
+          </div>
 
           {/* Availability badge */}
           <div className="mb-6">

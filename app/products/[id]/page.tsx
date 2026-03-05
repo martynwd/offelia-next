@@ -32,6 +32,7 @@ export default async function ProductPage({ params }: PageProps) {
   const category = getCategoryById(product.category_id);
   const isAdmin = await checkAuth();
 
+  console.log('log', isAdmin)
   return (
     <div className="max-w-6xl mx-auto">
       {/* Breadcrumbs */}

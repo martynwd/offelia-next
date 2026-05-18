@@ -19,10 +19,10 @@ export default function DeliveryPage() {
         </div>
       </div>
 
-      {/* Pricing Section */}
+      {/* Pricing Section — Саранск */}
       <div className="mb-8 md:mb-12">
         <h2 className="text-2xl md:text-3xl font-bold mb-6 text-center">
-          Стоимость доставки по г. Саранску и пригороду в пределах 20 км:
+          Стоимость доставки по г. Саранску:
         </h2>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6">
@@ -31,7 +31,7 @@ export default function DeliveryPage() {
               <Package className="h-8 w-8 text-primary" />
             </div>
             <h3 className="text-xl md:text-2xl font-bold text-center mb-2">До 20 кг</h3>
-            <p className="text-3xl font-bold text-primary text-center">400₽</p>
+            <p className="text-3xl font-bold text-primary text-center">500₽</p>
           </div>
 
           <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 border-2 border-gray-200 dark:border-gray-700 hover:border-primary transition-colors">
@@ -39,7 +39,7 @@ export default function DeliveryPage() {
               <Package className="h-8 w-8 text-primary" />
             </div>
             <h3 className="text-xl md:text-2xl font-bold text-center mb-2">До 100 кг</h3>
-            <p className="text-3xl font-bold text-primary text-center">700₽</p>
+            <p className="text-3xl font-bold text-primary text-center">900₽</p>
           </div>
 
           <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 border-2 border-gray-200 dark:border-gray-700 hover:border-primary transition-colors">
@@ -47,7 +47,40 @@ export default function DeliveryPage() {
               <Package className="h-8 w-8 text-primary" />
             </div>
             <h3 className="text-xl md:text-2xl font-bold text-center mb-2">Свыше 100 кг</h3>
+            <p className="text-3xl font-bold text-primary text-center">1100₽</p>
+          </div>
+        </div>
+      </div>
+
+      {/* Pricing Section — Пригород */}
+      <div className="mb-8 md:mb-12">
+        <h2 className="text-2xl md:text-3xl font-bold mb-6 text-center">
+          Стоимость доставки по пригороду (0–25 км):
+        </h2>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6">
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 border-2 border-gray-200 dark:border-gray-700 hover:border-primary transition-colors">
+            <div className="flex items-center justify-center mb-3">
+              <Package className="h-8 w-8 text-primary" />
+            </div>
+            <h3 className="text-xl md:text-2xl font-bold text-center mb-2">До 20 кг</h3>
+            <p className="text-3xl font-bold text-primary text-center">700₽</p>
+          </div>
+
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 border-2 border-gray-200 dark:border-gray-700 hover:border-primary transition-colors">
+            <div className="flex items-center justify-center mb-3">
+              <Package className="h-8 w-8 text-primary" />
+            </div>
+            <h3 className="text-xl md:text-2xl font-bold text-center mb-2">До 100 кг</h3>
             <p className="text-3xl font-bold text-primary text-center">1000₽</p>
+          </div>
+
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 border-2 border-gray-200 dark:border-gray-700 hover:border-primary transition-colors">
+            <div className="flex items-center justify-center mb-3">
+              <Package className="h-8 w-8 text-primary" />
+            </div>
+            <h3 className="text-xl md:text-2xl font-bold text-center mb-2">Свыше 100 кг</h3>
+            <p className="text-3xl font-bold text-primary text-center">1200₽</p>
           </div>
         </div>
 
@@ -61,14 +94,11 @@ export default function DeliveryPage() {
       {/* Distance Pricing */}
       <div className="mb-8 md:mb-12 p-6 md:p-8 bg-gray-50 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
         <h3 className="text-xl md:text-2xl font-bold mb-4">
-          Доставка за пределы 20 км
+          Стоимость доставки по районам (свыше 25 км)
         </h3>
         <div className="space-y-3 text-base md:text-lg">
           <p>
-            <strong>От 20 км до 150 км</strong> — 28 рублей за один километр
-          </p>
-          <p>
-            <strong>Свыше 150 км</strong> — 20 рублей за один километр до места передачи товара
+            <strong>От 25 км</strong> — 40 рублей за один километр
           </p>
         </div>
       </div>
